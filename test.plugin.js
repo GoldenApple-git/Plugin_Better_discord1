@@ -26,7 +26,7 @@
 @else@*/
 
 module.exports = (() => {
-    const config = {info:{name:"Multi",authors:[{name:"Goldenapple",discord_id:"474842502055329802"}],version:"1.0.2",description:"Plein de choses"},changelog:[{title:"Nouveautés",items:["ajout de mises à jours auto"]}],defaultConfig:[{type:"switch",id:"Active",name:"Active",note:"Active/Désactive le programme.",value:true}],main:"index.js"};
+    const config = {info:{name:"Multi",authors:[{name:"Goldenapple",discord_id:"474842502055329802"}],version:"1.0.3",description:"Plein de choses"},changelog:[{title:"Nouveautés",items:["ajout de mises à jours auto"]}],defaultConfig:[{type:"switch",id:"Active",name:"Active",note:"Active/Désactive le programme.",value:true}],main:"index.js"};
 
     return !global.ZeresPluginLibrary ? class {
         constructor() {this._config = config;}
@@ -60,16 +60,7 @@ module.exports = (() => {
             require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/version.txt", async (error, response, body) => {
                 if (body !== config.info.version)
                 {
-                    BdApi.showConfirmationModal("Version différente !", `Le plugin n'est pas à jour !.`, {
-                        confirmText: "Le mettre à jour :",
-                        cancelText: "Annuler",
-                        onConfirm: () => {
-                            require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js", async (error, response, body) => {
-                                if (error) return require("electron").shell.openExternal("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js");
-                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "test.plugin.js"), body, r));
-                            });
-                        }
-                    });
+                    this.DUpdatePlugin()
                 }
             });
         };
@@ -82,6 +73,19 @@ module.exports = (() => {
             const panel = this.buildSettingsPanel();
             return panel.getElement();
         };
+
+        DUpdatePlugin() {
+            BdApi.showConfirmationModal("Version différente !", `Le plugin n'est pas à jour !.`, {
+                confirmText: "Le mettre à jour :",
+                cancelText: "Annuler",
+                onConfirm: () => {
+                    require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js", async (error, response, body) => {
+                        if (error) return require("electron").shell.openExternal("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js");
+                        await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "test.plugin.js"), body, r));
+                    });
+                }
+            });
+        }
 
     };
 };
