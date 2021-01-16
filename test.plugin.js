@@ -26,7 +26,7 @@
 @else@*/
 
 module.exports = (() => {
-    const config = {info:{name:"Multi",authors:[{name:"Goldenapple",discord_id:"474842502055329802"}],version:"1.0.1",description:"Plein de choses"},changelog:[{title:"Nouveautés",items:["Base crée.","Changement de lib."]}],defaultConfig:[{type:"switch",id:"Active",name:"Active",note:"Active/Désactive le programme.",value:true}],main:"index.js"};
+    const config = {info:{name:"Multi",authors:[{name:"Goldenapple",discord_id:"474842502055329802"}],version:"1.0.2",description:"Plein de choses"},changelog:[{title:"Nouveautés",items:["ajout de mises à jours auto"]}],defaultConfig:[{type:"switch",id:"Active",name:"Active",note:"Active/Désactive le programme.",value:true}],main:"index.js"};
 
     return !global.ZeresPluginLibrary ? class {
         constructor() {this._config = config;}
@@ -50,12 +50,6 @@ module.exports = (() => {
         stop() {}
     } : (([Plugin, Api]) => {
         const plugin = (Plugin, Api) => {
-    const {Patcher, WebpackModules, DiscordModules, PluginUtilities, Utilities} = Api;
-
-    const SelectedChannelStore = DiscordModules.SelectedChannelStore;
-    const ChannelStore = DiscordModules.ChannelStore;
-    const ReactDOM = DiscordModules.ReactDOM;
-    const InlineMediaWrapper = WebpackModules.getByProps("ImageReadyStates").default;
 
     return class Multi extends Plugin {
         constructor() {
@@ -63,16 +57,16 @@ module.exports = (() => {
         };
 
         onStart() {
-            require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async (error, response, body) => {
-                if (body !== getVersion())
+            require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/version.txt", async (error, response, body) => {
+                if (body !== config.info.version)
                 {
-                    BdApi.showConfirmationModal("Library Missing", `The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`, {
-                        confirmText: "Download Now",
-                        cancelText: "Cancel",
+                    BdApi.showConfirmationModal("Version différente !", `Le plugin n'est pas à jour !.`, {
+                        confirmText: "Le mettre à jour :",
+                        cancelText: "Annuler",
                         onConfirm: () => {
-                            require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async (error, response, body) => {
-                                if (error) return require("electron").shell.openExternal("https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js");
-                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body, r));
+                            require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js", async (error, response, body) => {
+                                if (error) return require("electron").shell.openExternal("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js");
+                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "test.plugin.js"), body, r));
                             });
                         }
                     });
