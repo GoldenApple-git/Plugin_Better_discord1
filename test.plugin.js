@@ -60,25 +60,34 @@ module.exports = (() => {
     return class Multi extends Plugin {
         constructor() {
             super();
-        }
+        };
 
         onStart() {
-
-        }
+            require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async (error, response, body) => {
+                if (body !== getVersion())
+                {
+                    BdApi.showConfirmationModal("Library Missing", `The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`, {
+                        confirmText: "Download Now",
+                        cancelText: "Cancel",
+                        onConfirm: () => {
+                            require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async (error, response, body) => {
+                                if (error) return require("electron").shell.openExternal("https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js");
+                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body, r));
+                            });
+                        }
+                    });
+                }
+            });
+        };
 
         onStop() {
 
-        }
-        onMessage() {
-            if (this.settings.Active == true) {
-                require('fs').appendFile('Output.txt', message)
-            }
-        }
+        };
 
         getSettingsPanel() {
             const panel = this.buildSettingsPanel();
             return panel.getElement();
-        }
+        };
 
     };
 };
