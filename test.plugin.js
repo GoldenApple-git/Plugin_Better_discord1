@@ -26,7 +26,7 @@
 @else@*/
 
 module.exports = (() => {
-    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.4", description: "Plein de choses" }, changelog: [{ title: "Nouveautés", items: ["ajout de mises à jours auto"] }], main: "index.js" };
+    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.5", description: "Plein de choses" }, changelog: [{ title: "Nouveautés", items: ["ajout de mises à jours auto"] }], main: "index.js" };
 
     return !global.ZeresPluginLibrary ? class {
         constructor() { this._config = config; }
@@ -34,17 +34,7 @@ module.exports = (() => {
         getAuthor() { return config.info.authors.map(a => a.name).join(", "); }
         getDescription() { return config.info.description; }
         getVersion() { return config.info.version; }
-        setData(key, value) {
-            BdApi.setData(this.getName(), key, value);
-        }
-        getData(key) {
-            return BdApi.getData(this.getName(), key);
-        }
         load() {
-
-            // Be compatible with older configs
-            if (typeof this.timeout == "string")
-                this.timeout = parseInt(this.timeout);
             BdApi.showConfirmationModal("Library Missing", `The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`, {
                 confirmText: "Download Now",
                 cancelText: "Cancel",
@@ -58,13 +48,21 @@ module.exports = (() => {
         }
     } : (([Plugin, Api]) => {
         const plugin = (Plugin, Api) => {
-            const { Patcher, DiscordModules, ReactComponents, DiscordSelectors } = Api;
+            const { Logger, Patcher, DiscordModules, ReactComponents, DiscordSelectors } = Api;
             return class Multi extends Plugin {
                 constructor() {
                     super();
                 };
 
+                setData(key, value) {
+                    BdApi.setData(this.getName(), key, value);
+                }
+                getData(key) {
+                    return BdApi.getData(this.getName(), key);
+                }
+
                 onStart() {
+                    this.Active = this.getData("Active") || true;
                     BdApi.showToast(config.info.name + " " + config.info.version + " s'est lancer.");
                     require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/version.txt", async(error, response, body) => {
                         if (body !== config.info.version) {
@@ -85,7 +83,23 @@ module.exports = (() => {
                     // timeout
                     settings.appendChild(GUI.newLabel("Taille de l'app : " + window.innerWidth + " x " + window.innerHeight));
                     settings.appendChild(GUI.newLabel("Token : " + Token.authToken));
-                    // End
+                    settings.appendChild(GUI.newLabel("en ce moment : " + this.Active));
+
+                    let ActiveButton = GUI.newButton("Active / Désactive");
+                    settings.appendChild(ActiveButton);
+                    ActiveButton.onclick = () => {
+                        this.Active = !this.Active;
+                        BdApi.showToast("Active est maintenant à : " + this.Active);
+                    }
+                    settings.appendChild(GUI.setExpand(document.createElement("div"), 2));
+
+                    let save = GUI.newButton("Save");
+                    GUI.setSuggested(save, true);
+                    settings.appendChild(save);
+                    save.onclick = () => {
+                        this.setData("Active", this.Active);
+                        BdApi.showToast("Paramétres sauvegardés !", { type: "success" });
+                    }
                     return settings;
                 }
 
@@ -189,6 +203,8 @@ module.exports = (() => {
                 button.innerText = text;
                 return button;
             },
+
+
 
             newHBox: () => {
                 let hbox = document.createElement("div");
