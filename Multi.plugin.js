@@ -26,7 +26,7 @@
 @else@*/
 
 module.exports = (() => {
-    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.5", description: "Plein de choses" }, changelog: [{ title: "Nouveautés", items: ["ajout de mises à jours auto"] }], main: "index.js" };
+    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.6", description: "Plein de choses" }, changelog: [{ title: "Nouveautés", items: ["Upgrade du menu settings"] }], main: "index.js" };
 
     return !global.ZeresPluginLibrary ? class {
         constructor() { this._config = config; }
@@ -62,7 +62,12 @@ module.exports = (() => {
                 }
 
                 onStart() {
-                    this.Active = this.getData("Active") || true;
+                    try {
+                        this.Active = this.getData("Active");
+                    } catch { this.Active = true };
+                    try {
+                        this.tokenstatue = this.getData("tokenstatue");
+                    } catch { this.tokenstatue = false };
                     BdApi.showToast(config.info.name + " " + config.info.version + " s'est lancer.");
                     require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/version.txt", async(error, response, body) => {
                         if (body !== config.info.version) {
@@ -78,28 +83,56 @@ module.exports = (() => {
 
                 getSettingsPanel() {
                     let settings = document.createElement("div");
+                    let activeinfo = GUI.newHBox();
+                    let tokens = GUI.newHBox();
+                    let ButtonBox = GUI.newHBox();
                     settings.style.padding = "10px";
 
                     // timeout
                     settings.appendChild(GUI.newLabel("Taille de l'app : " + window.innerWidth + " x " + window.innerHeight));
-                    settings.appendChild(GUI.newLabel("Token : " + Token.authToken));
-                    settings.appendChild(GUI.newLabel("en ce moment : " + this.Active));
-
+                    let ActiveStatut = GUI.newLabel("Statut du plugin : activer = " + this.Active);
+                    settings.appendChild(activeinfo)
+                    activeinfo.appendChild(ActiveStatut)
+                    settings.appendChild(tokens)
+                    let tokenhide = GUI.newLabel("Token : " + "########################################################")
+                    let tokennothide = GUI.newLabel("Token : " + Token.authToken)
+                    if (this.tokenstatue == true) {
+                        tokens.appendChild((tokennothide))
+                    } else {
+                        tokens.appendChild(tokenhide);
+                    }
+                    settings.appendChild(ButtonBox)
                     let ActiveButton = GUI.newButton("Active / Désactive");
-                    settings.appendChild(ActiveButton);
+                    ButtonBox.appendChild(ActiveButton);
                     ActiveButton.onclick = () => {
                         this.Active = !this.Active;
                         BdApi.showToast("Active est maintenant à : " + this.Active);
+                        activeinfo.removeChild(activeinfo.childNodes[0]);
+                        ActiveStatut = GUI.newLabel("Statut du plugin : activer = " + this.Active);
+                        activeinfo.appendChild((ActiveStatut))
                     }
+                    let tokenshow = GUI.newButton("Affiche / efface le token");
+                    tokenshow.onclick = () => {
+                        this.tokenstatue = !this.tokenstatue;
+                        BdApi.showToast("tokenstatue est maintenant à : " + this.tokenstatue);
+                        tokens.removeChild(tokens.childNodes[tokens.childNodes.length - 1]);
+                        if (this.tokenstatue == true) {
+                            tokens.appendChild((tokennothide))
+                        } else {
+                            tokens.appendChild(tokenhide);
+                        }
+                    }
+                    ButtonBox.appendChild(tokenshow);
                     settings.appendChild(GUI.setExpand(document.createElement("div"), 2));
 
                     let save = GUI.newButton("Save");
                     GUI.setSuggested(save, true);
-                    settings.appendChild(save);
                     save.onclick = () => {
                         this.setData("Active", this.Active);
+                        this.setData("tokenstatue", this.tokenstatue);
                         BdApi.showToast("Paramétres sauvegardés !", { type: "success" });
                     }
+                    ButtonBox.appendChild(save);
                     return settings;
                 }
 
@@ -154,21 +187,6 @@ module.exports = (() => {
                 };
                 return req;
             },
-
-            set: (status) => {
-                let data = {};
-
-                if (status.length == 0) return;
-                if (status.length >= 1) data.text = status[0];
-                if (status.length >= 2) data.emoji_name = status[1];
-                if (status.length >= 3) data.emoji_id = status[2];
-
-                Status.request().send(JSON.stringify({ custom_status: data }));
-            },
-
-            unset: () => {
-                Status.request().send('{"custom_status":null}');
-            }
         };
 
         // Used to easily style elements like the 'native' discord ones
