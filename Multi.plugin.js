@@ -141,9 +141,9 @@ module.exports = (() => {
                         confirmText: "Le mettre à jour :",
                         cancelText: "Annuler",
                         onConfirm: () => {
-                            require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js", async(error, response, body) => {
-                                if (error) return require("electron").shell.openExternal("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/test.plugin.js");
-                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "test.plugin.js"), body, r));
+                            require("request").get("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/Multi.plugin.js", async(error, response, body) => {
+                                if (error) return require("electron").shell.openExternal("https://raw.githubusercontent.com/GoldenApple-git/Plugin_Better_discord1/master/Multi.plugin.js");
+                                await new Promise(r => require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "Multi.plugin.js"), body, r));
                             });
                         }
                     });
