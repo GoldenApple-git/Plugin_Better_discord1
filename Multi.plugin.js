@@ -1,5 +1,6 @@
 /**
  * @name Multi
+ * @description Code par [Goldenapple]#3619 pout toute modification merci de demander
  * @invite https://discord.gg/EWEzEfu
  */
 /*@cc_on
@@ -26,7 +27,7 @@
 @else@*/
 
 module.exports = (() => {
-    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.7", description: "Plein de choses" }, changelog: [{ title: "Nouveautés", items: ["Upgrade du menu settings"] }], main: "index.js" };
+    const config = { info: { name: "Multi", authors: [{ name: "Goldenapple", discord_id: "474842502055329802" }], version: "1.0.7", description: "Plein de choses, Code par [Goldenapple]#3619 pout toute modification merci de demander" }, changelog: [{ title: "Nouveautés", items: ["Upgrade du menu settings"] }], main: "index.js" };
 
     return !global.ZeresPluginLibrary ? class {
         constructor() { this._config = config; }
